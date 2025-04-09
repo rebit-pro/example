@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psalm
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:noNamespaceSchemaLocation="https://getpsalm.org/schema/config.xsd"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true">
+    <projectFiles>
+        <directory name="src" />
+        <directory name="bin" />
+        <directory name="config" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <RiskyTruthyFalsyComparison errorLevel="info"/>
+        <UnusedVariable errorLevel="info"/>
+    </issueHandlers>
+
+</psalm>

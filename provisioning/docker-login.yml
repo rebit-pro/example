@@ -1,0 +1,19 @@
+---
+  - name: Log into private registry
+    hosts: site
+    remote_user: root
+    become: yes
+    become_user: deploy
+    vars_promt:
+      - name: registry
+        promt: "Registry"
+        private: no
+      - name: username
+        promt: "Username"
+        private: no
+      - name: password
+        promt: "Password"
+    tasks:
+      - name: Log into private registry
+        shell: "docker login -u '{{ username }}' -p '{{ password }}' {{ registry }}"
+

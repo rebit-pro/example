@@ -1,0 +1,26 @@
+---
+- name: Check if cert already exists
+  stat:
+    path: /etc/letsencrypt/live/{{ item }}/cert.pem
+  register: letsencrypt_certs
+  with_items: "{{ cerbot_hosts }}"
+
+- name: Checking port 80
+  wait_for:
+    port: 80
+    timeout: 1
+  register: port_check
+  ignore_errors: yes
+
+- name: To raise apache from docker
+  shell: "docker run -d --name apache -v /var/www/html:/usr/local/apache2/htdocs/ -p 80:80 httpd:2.4-bullseye"
+  when: port_check.failed == true
+
+- name: Generating a new certificate
+  shell: "certbot certonly --noninteractive --agree-tos --email {{ cerbot_email }} -d {{item.item}}"
+  with_items: "{{ letsencrypt_certs.results }}"
+  when: not item.stat.exists
+
+- name: Disable apache
+  shell: "docker run rm -f apache"
+  when: port_check.failed == true

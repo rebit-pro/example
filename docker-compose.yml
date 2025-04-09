@@ -1,0 +1,76 @@
+services:
+    frontend:
+        build:
+            context: frontend/docker
+            dockerfile: development/nginx/DockerFile
+        networks:
+            - traefik-public
+            - default
+        labels:
+            - traefik.enable=true
+            - traefik.docker.network=traefik-public
+            - traefik.http.routers.auction.rule=Host(`auction.localhost`) || Host(`www.auction.localhost`)
+            - traefik.http.routers.auction.entryPoints=http
+            - traefik.http.services.auction.loadBalancer.server.port=80
+            - traefik.http.middlewares.auction-redirect.redirectRegex.regex=^(https?://)www.localhost/(.*)$$
+            - traefik.http.middlewares.auction-redirect.redirectRegex.replacement=$${1}localhost/$${2}
+            - traefik.http.middlewares.auction-redirect.redirectRegex.permanent=true
+            - traefik.http.routers.auction.middlewares=auction-redirect
+            
+    api:
+        build: 
+            context: api/docker
+            dockerfile: development/nginx/DockerFile
+        volumes:
+            - ./api:/app
+        networks:
+            - traefik-public
+            - default
+        labels:
+            - traefik.enable=true
+            - traefik.docker.network=traefik-public
+            - traefik.http.routers.api-auction.rule=Host(`api.auction.localhost`)
+            - traefik.http.routers.api-auction.entryPoints=http
+            - traefik.http.services.api-auction.loadBalancer.server.port=80
+
+    api-php-fpm:
+        build: 
+            context: api/docker
+            dockerfile: development/php-fpm/DockerFile
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ./api:/app
+        environment:
+            APP_DEBUG: 1
+
+    api-php-cli:
+        build: 
+            context: api/docker
+            dockerfile: development/php-cli/DockerFile
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ./api:/app
+        environment:
+            APP_DEBUG: 1
+
+    api-mysql:
+        image: mysql:8.0
+        restart: always
+        environment:
+            MYSQL_DATABASE: app
+            MYSQL_USER: app
+            MYSQL_PASSWORD: secrets
+            MYSQL_ROOT_PASSWORD: rootpassword
+        volumes:
+            - api-mysql:/var/lib/mysql
+        ports:
+            - "33061:3306"
+
+volumes:
+    api-mysql:
+
+networks:
+    traefik-public:
+        external: true
