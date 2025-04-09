@@ -1,0 +1,74 @@
+---
+- name: Updating the package list
+  apt:
+    update_cache: yes
+
+- name: Installing dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: present
+    update_cache: yes
+
+- name: Adding a GPG Docker key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Verification of the GPG Docker key
+  apt_key:
+    id: 0EBFCD88
+    state: present
+
+- name: Adding a Docker Repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+    state: present
+
+- name: Updating the package list
+  apt:
+    update_cache: yes
+
+- name: Installing Docker CE
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+  notify: Start docker on boot
+
+- name: Launching and enabling Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Добавление пользователя в группу docker
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: Downloading Docker Compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    group: docker
+    mode: 'u+x,g+x'
+
+- name: Set periodic Docker prune
+  cron:
+    name: docker-prune
+    job: 'docker system prune -f --filter "until=$((30*24))h"'
+    minute: '0'
+    hour: '1'
+
+- name: Auto-cleaning of packages
+  apt:
+    autoclean: yes
+
+- name: Removing packages
+  apt:
+    autoremove: yes
