@@ -12,6 +12,7 @@
         <directory name="config" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="src/Auth/tests" />
         </ignoreFiles>
     </projectFiles>
 
