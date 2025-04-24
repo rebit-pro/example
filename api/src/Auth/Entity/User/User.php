@@ -36,7 +36,7 @@ final class User
     {
         return $this->date;
     }
-    
+
     public function getEmail(): string
     {
         return $this->email->getValue();

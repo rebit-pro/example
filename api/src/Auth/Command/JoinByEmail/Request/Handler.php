@@ -10,7 +10,6 @@ use Webmozart\Assert\Assert;
 
 final class Handler
 {
-
     /**
      * Handle the command.
      *
@@ -22,7 +21,8 @@ final class Handler
         private readonly Tokenizer $tokenizer,
         private readonly JoinConfirmationSender $sender,
         private readonly Flasher $flasher
-    ) {}
+    ) {
+    }
 
     /**
      * @param Command $command

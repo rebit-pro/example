@@ -14,7 +14,8 @@ final class Status
 
     public function __construct(
         private string $name
-    ) {}
+    ) {
+    }
 
     public static function wait(): self
     {

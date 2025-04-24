@@ -13,7 +13,8 @@ final class Tokenizer
 {
     public function __construct(
         private DateInterval $interval,
-    ) {}
+    ) {
+    }
 
     /**
      * @param DateTimeImmutable $date

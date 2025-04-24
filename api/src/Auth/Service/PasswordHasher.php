@@ -10,7 +10,8 @@ final class PasswordHasher
 {
     public function __construct(
         private readonly int $memoryCost = PASSWORD_ARGON2_DEFAULT_MEMORY_COST,
-    ) {}
+    ) {
+    }
 
     public function hash(string $password): string
     {

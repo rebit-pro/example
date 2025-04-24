@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  */
 class TokenTest extends TestCase
 {
-    public function testSuccess() : void
+    public function testSuccess(): void
     {
         $id = new Token(
             $value = Uuid::uuid4()->toString(),
@@ -25,7 +25,7 @@ class TokenTest extends TestCase
         self::assertEquals($expires, $id->getExpires());
     }
 
-    public function testCase() : void
+    public function testCase(): void
     {
         $value = Uuid::uuid4()->toString();
 
@@ -34,14 +34,14 @@ class TokenTest extends TestCase
         self::assertEquals($value, $token->getValue());
     }
 
-    public function testEmpty() : void
+    public function testEmpty(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Token('', new DateTimeImmutable());
     }
 
-    public function testIncorrect() : void
+    public function testIncorrect(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 

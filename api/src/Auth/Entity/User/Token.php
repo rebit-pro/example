@@ -26,6 +26,4 @@ final class Token
     {
         return $this->expires;
     }
-
-
 }
