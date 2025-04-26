@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\JoinByEmail\Confirm;
 
-use App\Auth\Entity\User\UserRepositary;
+use App\Auth\Entity\User\Flusher;
+use App\Auth\Entity\User\UserRepository;
 use DateTimeImmutable;
 
-final class Handler
+final readonly class Handler
 {
     /**
      * Handle the command.
      *
-     * @param UserRepositary $usersRepository
+     * @param UserRepository $users
+     * @param Flusher $flasher
      */
     public function __construct(
-        private readonly UserRepository $users,
-        private readonly Flusher $flasher
+        private UserRepository $users,
+        private Flusher $flasher
     ) {
     }
 
@@ -26,11 +28,14 @@ final class Handler
      */
     public function handle(Command $command): void
     {
-        if (!$this->users->findByConfirmToken($command->token)) {
+        if ($user = $this->users->finByConfirmToken($command->token)) {
             throw new \DomainException('Incorrect token.');
         }
 
-        $user->confirmJoin($command->token, new DateTimeImmutable());
+        $user->confirmJoin(
+            $command->token,
+            new DateTimeImmutable()
+        );
 
         $this->flasher->flush();
     }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Auth\Entity\User;
 
-interface UserRepositary
+interface UserRepository
 {
     public function add(User $user): void;
     public function hasByEmail(Email $email): bool;
+    public function finByConfirmToken(string $token): ?User;
 }

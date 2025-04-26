@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\JoinByEmail\Request;
 
-use App\Auth\Entity\User\Email;
-use App\Auth\Entity\User\Id;
-use App\Auth\Entity\User\User;
-use App\Auth\Entity\User\UserRepositary;
-use App\Auth\Service\JoinConfirmationSender;
-use App\Auth\Service\PasswordHasher;
-use App\Auth\Service\Tokenizer;
+use App\Auth\Entity\User\{Email, Flusher, Id, User, UserRepository};
+use App\Auth\Service\{JoinConfirmationSender, PasswordHasher, Tokenizer};
 use DateTimeImmutable;
 
 final readonly class Handler
@@ -18,14 +13,18 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepositary $usersRepository
+     * @param UserRepository $usersRepository
+     * @param PasswordHasher $hasher
+     * @param Tokenizer $tokenizer
+     * @param JoinConfirmationSender $sender
+     * @param Flusher $flasher
      */
     public function __construct(
-        private UserRepositary         $usersRepository,
-        private PasswordHasher         $hasher,
-        private Tokenizer              $tokenizer,
+        private UserRepository $usersRepository,
+        private PasswordHasher $hasher,
+        private Tokenizer $tokenizer,
         private JoinConfirmationSender $sender,
-        private Flasher                $flasher
+        private Flusher $flasher
     ) {
     }
 

@@ -36,5 +36,7 @@ class RequestTest extends TestCase
 
         self::assertTrue($user->isWait());
         self::assertFalse($user->isActive());
+
+        self::assertNotNull($user->getJoinConfirmToken());
     }
 }
