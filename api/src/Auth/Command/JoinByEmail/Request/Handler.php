@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\JoinByEmail\Request;
 
+use App\Auth\Entity\User\Email;
+use App\Auth\Entity\User\Id;
+use App\Auth\Entity\User\User;
+use App\Auth\Entity\User\UserRepositary;
+use App\Auth\Service\JoinConfirmationSender;
+use App\Auth\Service\PasswordHasher;
+use App\Auth\Service\Tokenizer;
 use DateTimeImmutable;
-use Ramsey\Uuid\Nonstandard\Uuid;
-use Webmozart\Assert\Assert;
 
-final class Handler
+final readonly class Handler
 {
     /**
      * Handle the command.
      *
-     * @param UserRepository $usersRepository
+     * @param UserRepositary $usersRepository
      */
     public function __construct(
-        private readonly UserRepository $usersRepository,
-        private readonly PasswordHasher $hasher,
-        private readonly Tokenizer $tokenizer,
-        private readonly JoinConfirmationSender $sender,
-        private readonly Flasher $flasher
+        private UserRepositary         $usersRepository,
+        private PasswordHasher         $hasher,
+        private Tokenizer              $tokenizer,
+        private JoinConfirmationSender $sender,
+        private Flasher                $flasher
     ) {
     }
 
@@ -28,7 +33,7 @@ final class Handler
      * @param Command $command
      * @return void
      */
-    public function handle(Command $command)
+    public function handle(Command $command): void
     {
 
         $email = new Email($command->email);
