@@ -9,12 +9,13 @@ use DateTimeImmutable;
 
 final class Status
 {
-    private const WAIT = 'wait';
-    private const ACTIVE = 'active';
+    private const string WAIT = 'wait';
+    private const string ACTIVE = 'active';
 
     public function __construct(
-        private string $name
-    ) {}
+        private readonly string $name
+    ) {
+    }
 
     public static function wait(): self
     {

@@ -13,14 +13,14 @@ use Ramsey\Uuid\Rfc4122\UuidV4;
  */
 class IdTest extends TestCase
 {
-    public function testSuccess() : void
+    public function testSuccess(): void
     {
         $id = new Id($value = UuidV4::uuid4()->toString());
 
         self::assertEquals($value, $id->getValue());
     }
 
-    public function testCase() : void
+    public function testCase(): void
     {
         $value = UuidV4::uuid4()->toString();
 
@@ -29,20 +29,20 @@ class IdTest extends TestCase
         self::assertEquals($value, $id->getValue());
     }
 
-    public function testGenerate() : void
+    public function testGenerate(): void
     {
         $id = Id::generate();
 
         self::assertNotEmpty($id->getValue());
     }
 
-    public function testEmpty() : void
+    public function testEmpty(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new Id('');
     }
 
-    public function testIncorrect() : void
+    public function testIncorrect(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         new Id('12345');

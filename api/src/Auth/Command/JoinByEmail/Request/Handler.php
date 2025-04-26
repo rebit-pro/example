@@ -4,31 +4,35 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\JoinByEmail\Request;
 
+use App\Auth\Entity\User\{Email, Flusher, Id, User, UserRepository};
+use App\Auth\Service\{JoinConfirmationSender, PasswordHasher, Tokenizer};
 use DateTimeImmutable;
-use Ramsey\Uuid\Nonstandard\Uuid;
-use Webmozart\Assert\Assert;
 
-final class Handler
+final readonly class Handler
 {
-
     /**
      * Handle the command.
      *
      * @param UserRepository $usersRepository
+     * @param PasswordHasher $hasher
+     * @param Tokenizer $tokenizer
+     * @param JoinConfirmationSender $sender
+     * @param Flusher $flasher
      */
     public function __construct(
-        private readonly UserRepository $usersRepository,
-        private readonly PasswordHasher $hasher,
-        private readonly Tokenizer $tokenizer,
-        private readonly JoinConfirmationSender $sender,
-        private readonly Flasher $flasher
-    ) {}
+        private UserRepository $usersRepository,
+        private PasswordHasher $hasher,
+        private Tokenizer $tokenizer,
+        private JoinConfirmationSender $sender,
+        private Flusher $flasher
+    ) {
+    }
 
     /**
      * @param Command $command
      * @return void
      */
-    public function handle(Command $command)
+    public function handle(Command $command): void
     {
 
         $email = new Email($command->email);

@@ -8,11 +8,11 @@ final class User
 {
     private Status $status;
     public function __construct(
-        private Id $id,
-        private \DateTimeImmutable $date,
-        private Email $email,
-        private string $hash,
-        private ?Token $tokenizer,
+        private readonly Id $id,
+        private readonly \DateTimeImmutable $date,
+        private readonly Email $email,
+        private readonly string $hash,
+        private ?Token $joinConfirmToken,
     ) {
         $this->status = Status::wait();
     }
@@ -36,7 +36,7 @@ final class User
     {
         return $this->date;
     }
-    
+
     public function getEmail(): string
     {
         return $this->email->getValue();
@@ -47,8 +47,24 @@ final class User
         return $this->hash;
     }
 
-    public function getJoinConfirmToken(): Token
+    public function getJoinConfirmToken(): ?Token
     {
-        return $this->tokenizer;
+        return $this->joinConfirmToken;
+    }
+
+    public function confirmJoin(string $token, \DateTimeImmutable $date): void
+    {
+        if ($this->isActive() === true) {
+            throw new \DomainException('User is already active.');
+        }
+
+        if ($this->joinConfirmToken === null) {
+            throw new \DomainException('Confirmation is not required.');
+        }
+
+        $this->joinConfirmToken->validate($token, $date);
+
+        $this->status = Status::active();
+        $this->joinConfirmToken = null;
     }
 }
