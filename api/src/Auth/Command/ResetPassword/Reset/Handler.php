@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Auth\Command\JoinByEmail\Confirm;
+namespace App\Auth\Command\ResetPassword\Reset;
 
 use App\Auth\Entity\User\Flusher;
 use App\Auth\Entity\User\UserRepository;
+use App\Auth\Service\PasswordHasher;
 use DateTimeImmutable;
 
 final readonly class Handler
@@ -18,7 +19,8 @@ final readonly class Handler
      */
     public function __construct(
         private UserRepository $users,
-        private Flusher $flasher
+        private Flusher $flasher,
+        private PasswordHasher $hasher,
     ) {
     }
 
@@ -28,13 +30,14 @@ final readonly class Handler
      */
     public function handle(Command $command): void
     {
-        if ($user = $this->users->findByConfirmToken($command->token)) {
-            throw new \DomainException('Incorrect token.');
+        if (!$user = $this->users->findByPasswordResetToken($command->token)) {
+            throw new \DomainException('Token is not found.');
         }
 
-        $user->confirmJoin(
+        $user->resetPassword(
             $command->token,
-            new DateTimeImmutable()
+            new DateTimeImmutable(),
+            $this->hasher->hash($command->password)
         );
 
         $this->flasher->flush();

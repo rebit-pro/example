@@ -18,7 +18,7 @@ use Ramsey\Uuid\Nonstandard\Uuid;
  */
 class RequestTest extends TestCase
 {
-    public function testSeccuess(): void
+    public function testSuccess(): void
     {
         $user = User::requestJoinByEmail(
             $id = Id::generate(),
