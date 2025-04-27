@@ -10,6 +10,7 @@ use AllowDynamicProperties;
 {
     private ?string $passwordHash = null;
     private ?Token $joinConfirmToken = null;
+    private ?Token $passwordResetToken = null;
     private \ArrayObject $networks;
 
     private function __construct(
@@ -97,6 +98,11 @@ use AllowDynamicProperties;
         return $this->networks->getArrayCopy();
     }
 
+    public function getPasswordResetToken(): ?Token
+    {
+        return $this->passwordResetToken;
+    }
+
     public function confirmJoin(string $token, \DateTimeImmutable $date): void
     {
         if ($this->isActive() === true) {
@@ -111,5 +117,37 @@ use AllowDynamicProperties;
 
         $this->status = Status::active();
         $this->joinConfirmToken = null;
+    }
+
+    public function requestPasswordReset(Token $token, \DateTimeImmutable $date): void
+    {
+        if ($this->isActive() === false) {
+            throw new \DomainException('User is not active.');
+        }
+
+        if ($this->passwordResetToken !== null && !$this->passwordResetToken->isExpiredTo($date)) {
+            throw new \DomainException('Password reset token already exists.');
+        }
+
+
+        $token->validate($token->getValue(), $date);
+
+        $this->passwordResetToken = $token;
+    }
+
+    public function resetPassword(string $token, string $hash, \DateTimeImmutable $date): void
+    {
+        if ($this->isActive() === false) {
+            throw new \DomainException('User is not active.');
+        }
+
+        if ($this->passwordResetToken === null) {
+            throw new \DomainException('Password reset token is not requested.');
+        }
+
+        $this->passwordResetToken->validate($token, $date);
+
+        $this->passwordHash = $hash;
+        $this->passwordResetToken = null;
     }
 }
