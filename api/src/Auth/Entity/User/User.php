@@ -12,6 +12,8 @@ use App\Auth\Service\PasswordHasher;
     private ?string $passwordHash = null;
     private ?Token $joinConfirmToken = null;
     private ?Token $passwordResetToken = null;
+    private ?Email $newEmail = null;
+    private ?Token $newEmailToken = null;
     private \ArrayObject $networks;
 
     private function __construct(
@@ -104,6 +106,16 @@ use App\Auth\Service\PasswordHasher;
         return $this->passwordResetToken;
     }
 
+    public function getNewEmail(): ?Email
+    {
+        return $this->newEmail;
+    }
+
+    public function getNewEmailToken(): ?Token
+    {
+        return $this->newEmailToken;
+    }
+
     public function confirmJoin(string $token, \DateTimeImmutable $date): void
     {
         if ($this->isActive() === true) {
@@ -120,6 +132,19 @@ use App\Auth\Service\PasswordHasher;
         $this->joinConfirmToken = null;
     }
 
+    public function confirmEmailChanging(string $token, \DateTimeImmutable $date): void
+    {
+        if ($this->newEmailToken === null || $this->newEmail === null) {
+            throw new \DomainException('Email is not requested.');
+        }
+
+        $this->newEmailToken->validate($token, $date);
+
+        $this->email = $this->newEmail;
+        $this->newEmail = null;
+        $this->newEmailToken = null;
+    }
+
     public function requestPasswordReset(Token $token, \DateTimeImmutable $date): void
     {
         if ($this->isActive() === false) {
@@ -129,7 +154,6 @@ use App\Auth\Service\PasswordHasher;
         if ($this->passwordResetToken !== null && !$this->passwordResetToken->isExpiredTo($date)) {
             throw new \DomainException('Password reset token already exists.');
         }
-
 
         $token->validate($token->getValue(), $date);
 
@@ -167,5 +191,28 @@ use App\Auth\Service\PasswordHasher;
         }
 
         $this->passwordHash = $hasher->hash($new);
+    }
+
+    public function requestEmailChanging(
+        Token $token,
+        \DateTimeImmutable $date,
+        Email $email,
+    ): void {
+        if ($this->isActive() === false) {
+            throw new \DomainException('User is not active.');
+        }
+
+        if ($this->email->isEqualTo($email)) {
+            throw new \DomainException('New email is the same as current.');
+        }
+
+        if ($this->newEmailToken !== null && !$this->newEmailToken->isExpiredTo($date)) {
+            throw new \DomainException('Email is already requested.');
+        }
+
+        $token->validate($token->getValue(), $date);
+
+        $this->newEmail = $email;
+        $this->newEmailToken = $token;
     }
 }
