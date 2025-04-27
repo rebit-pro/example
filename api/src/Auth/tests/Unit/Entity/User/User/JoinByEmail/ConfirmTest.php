@@ -86,8 +86,6 @@ class ConfirmTest extends TestCase
         );
     }
 
-
-
     private function createToken(): Token
     {
         return new Token(
