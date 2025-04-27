@@ -42,7 +42,7 @@ final readonly class Handler
             throw new \DomainException('User already exists');
         }
 
-        $user = new User(
+        $user = User::requestJoinByEmail(
             Id::generate(),
             $now,
             $email,

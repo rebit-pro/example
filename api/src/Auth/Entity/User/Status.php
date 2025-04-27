@@ -12,7 +12,7 @@ final class Status
     private const string WAIT = 'wait';
     private const string ACTIVE = 'active';
 
-    public function __construct(
+    private function __construct(
         private readonly string $name
     ) {
     }
