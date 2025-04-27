@@ -6,7 +6,7 @@ namespace App\Auth\Service;
 
 use Webmozart\Assert\Assert;
 
-final class PasswordHasher
+readonly class PasswordHasher
 {
     public function __construct(
         private readonly int $memoryCost = PASSWORD_ARGON2_DEFAULT_MEMORY_COST,
