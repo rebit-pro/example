@@ -25,9 +25,9 @@ class JoinByNetworkTest extends TestCase
             $network = new NetworkIdentity('google', 'google-1'),
         );
 
-        self::assertEquals($id->getValue(), $user->getId());
+        self::assertEquals($id, $user->getId());
         self::assertEquals($date, $user->getDate());
-        self::assertEquals($email->getValue(), $user->getEmail());
+        self::assertEquals($email, $user->getEmail());
 
         self::assertFalse($user->isWait());
         self::assertTrue($user->isActive());

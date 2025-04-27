@@ -28,9 +28,9 @@ class RequestTest extends TestCase
             $token = new Token(Uuid::uuid4()->toString(), new DateTimeImmutable()),
         );
 
-        self::assertEquals($id->getValue(), $user->getId());
+        self::assertEquals($id, $user->getId());
         self::assertEquals($date, $user->getDate());
-        self::assertEquals($email->getValue(), $user->getEmail());
+        self::assertEquals($email, $user->getEmail());
         self::assertEquals($hash, $user->getPasswordHash());
         self::assertEquals($token, $user->getJoinConfirmToken());
 

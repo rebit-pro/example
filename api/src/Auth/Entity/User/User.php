@@ -67,9 +67,9 @@ use AllowDynamicProperties;
         return $this->status->isActive();
     }
 
-    public function getId(): string
+    public function getId(): Id
     {
-        return $this->id->getValue();
+        return $this->id;
     }
 
     public function getDate(): \DateTimeImmutable
@@ -77,9 +77,9 @@ use AllowDynamicProperties;
         return $this->date;
     }
 
-    public function getEmail(): string
+    public function getEmail(): Email
     {
-        return $this->email->getValue();
+        return $this->email;
     }
 
     public function getPasswordHash(): string
