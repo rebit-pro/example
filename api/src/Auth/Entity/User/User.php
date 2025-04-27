@@ -4,17 +4,57 @@ declare(strict_types=1);
 
 namespace App\Auth\Entity\User;
 
-final class User
+use AllowDynamicProperties;
+
+#[AllowDynamicProperties] final class User
 {
-    private Status $status;
-    public function __construct(
+    private ?string $passwordHash = null;
+    private ?Token $joinConfirmToken = null;
+    private \ArrayObject $networks;
+
+    private function __construct(
         private readonly Id $id,
-        private readonly \DateTimeImmutable $date,
-        private readonly Email $email,
-        private readonly string $hash,
-        private ?Token $joinConfirmToken,
+        private \DateTimeImmutable $date,
+        private Email $email,
+        private Status $status
     ) {
-        $this->status = Status::wait();
+        $this->networks = new \ArrayObject();
+    }
+
+    public static function requestJoinByEmail(
+        Id $id,
+        \DateTimeImmutable $date,
+        Email $email,
+        string $hash,
+        Token $joinConfirmToken
+    ): self {
+        $user = new self($id, $date, $email, Status::wait());
+        $user->passwordHash = $hash;
+        $user->joinConfirmToken = $joinConfirmToken;
+        return $user;
+    }
+
+    public static function joinByNetwork(
+        Id $id,
+        \DateTimeImmutable $date,
+        Email $email,
+        NetworkIdentity $identity
+    ): self {
+        $user = new self($id, $date, $email, Status::active());
+        $user->networks->append($identity);
+        return $user;
+    }
+
+    public function attachNetwork(NetworkIdentity $identity): void
+    {
+        /** @var NetworkIdentity $network */
+        foreach ($this->networks as $network) {
+            if ($network->isEqualTo($identity)) {
+                throw new \DomainException('User with this network already exists.');
+            }
+        }
+
+        $this->networks->append($identity);
     }
 
     public function isWait(): bool
@@ -44,12 +84,17 @@ final class User
 
     public function getPasswordHash(): string
     {
-        return $this->hash;
+        return $this->passwordHash;
     }
 
     public function getJoinConfirmToken(): ?Token
     {
         return $this->joinConfirmToken;
+    }
+
+    public function getNetworks(): array
+    {
+        return $this->networks->getArrayCopy();
     }
 
     public function confirmJoin(string $token, \DateTimeImmutable $date): void
