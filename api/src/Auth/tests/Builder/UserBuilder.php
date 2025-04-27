@@ -6,6 +6,7 @@ namespace App\Auth\tests\Builder;
 
 use App\Auth\Entity\User\Email;
 use App\Auth\Entity\User\Id;
+use App\Auth\Entity\User\NetworkIdentity;
 use App\Auth\Entity\User\Token;
 use App\Auth\Entity\User\User;
 use Ramsey\Uuid\Nonstandard\Uuid;
@@ -17,8 +18,8 @@ class UserBuilder
     private Email $email;
     private string $hash;
     private Token $joinConfirmToken;
-
     private bool $active = false;
+    private ?NetworkIdentity $networkIdentity = null;
     public function __construct()
     {
         $this->id = Id::generate();
@@ -36,6 +37,14 @@ class UserBuilder
         return $clone;
     }
 
+    public function viaNetwork(NetworkIdentity $identity = null): self
+    {
+        $clone = clone $this;
+        $clone->networkIdentity = $identity ?? new NetworkIdentity('google', 'google-1');
+
+        return $clone;
+    }
+
     public function withJoinConfirmToken(Token $token): self
     {
         $clone = clone $this;
@@ -49,6 +58,16 @@ class UserBuilder
      */
     public function build(): User
     {
+
+        if ($this->networkIdentity) {
+            return User::joinByNetwork(
+                $this->id,
+                $this->date,
+                $this->email,
+                $this->networkIdentity,
+            );
+        }
+
         $user = User::requestJoinByEmail(
             $this->id,
             $this->date,
