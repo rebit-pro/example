@@ -27,6 +27,7 @@ final readonly class Handler
     }
 
     /**
+     * Запрос на сброс пароля.
      * @param Command $command
      * @return void
      */

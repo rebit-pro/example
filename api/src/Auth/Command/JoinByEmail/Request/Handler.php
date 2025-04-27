@@ -29,6 +29,7 @@ final readonly class Handler
     }
 
     /**
+     * Join by email.
      * @param Command $command
      * @return void
      */

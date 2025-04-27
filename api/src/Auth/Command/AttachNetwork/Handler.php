@@ -12,10 +12,7 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepository $usersRepository
-     * @param PasswordHasher $hasher
-     * @param Tokenizer $tokenizer
-     * @param JoinConfirmationSender $sender
+     * @param UserRepository $users
      * @param Flusher $flasher
      */
     public function __construct(
@@ -25,6 +22,7 @@ final readonly class Handler
     }
 
     /**
+     * Attach network identity to user.
      * @param Command $command
      * @return void
      */

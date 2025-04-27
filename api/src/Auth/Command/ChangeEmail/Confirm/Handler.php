@@ -23,6 +23,7 @@ final readonly class Handler
     }
 
     /**
+     * Смена email.
      * @param Command $command
      * @return void
      */
