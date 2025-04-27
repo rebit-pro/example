@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Auth\Command\JoinByEmail\Confirm;
+namespace App\Auth\Command\Remove;
 
-use App\Auth\Entity\User\Flusher;
-use App\Auth\Entity\User\UserRepository;
-use DateTimeImmutable;
+use App\Auth\Entity\User\{Flusher, Id, UserRepository};
 
 final readonly class Handler
 {
@@ -23,20 +21,17 @@ final readonly class Handler
     }
 
     /**
-     * Join by email confirmation.
+     * Удаление пользователя.
      * @param Command $command
      * @return void
      */
     public function handle(Command $command): void
     {
-        if ($user = $this->users->findByConfirmToken($command->token)) {
-            throw new \DomainException('Incorrect token.');
-        }
+        $user = $this->users->get(new Id($command->id));
 
-        $user->confirmJoin(
-            $command->token,
-            new DateTimeImmutable()
-        );
+        $user->remove();
+
+        $this->users->remove($user);
 
         $this->flasher->flush();
     }

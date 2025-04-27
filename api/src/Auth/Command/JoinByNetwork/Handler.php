@@ -22,6 +22,7 @@ final readonly class Handler
     }
 
     /**
+     * Join by network.
      * @param Command $command
      * @return void
      */

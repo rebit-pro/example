@@ -15,6 +15,7 @@ use App\Auth\Service\PasswordHasher;
     private ?Email $newEmail = null;
     private ?Token $newEmailToken = null;
     private \ArrayObject $networks;
+    private Role $role;
 
     private function __construct(
         private readonly Id $id,
@@ -23,6 +24,7 @@ use App\Auth\Service\PasswordHasher;
         private Status $status
     ) {
         $this->networks = new \ArrayObject();
+        $this->role = Role::user();
     }
 
     public static function requestJoinByEmail(
@@ -114,6 +116,11 @@ use App\Auth\Service\PasswordHasher;
     public function getNewEmailToken(): ?Token
     {
         return $this->newEmailToken;
+    }
+
+    public function getRole(): Role
+    {
+        return $this->role;
     }
 
     public function confirmJoin(string $token, \DateTimeImmutable $date): void
@@ -214,5 +221,21 @@ use App\Auth\Service\PasswordHasher;
 
         $this->newEmail = $email;
         $this->newEmailToken = $token;
+    }
+
+    public function changeRole(Role $role): void
+    {
+        if ($this->role->isEqualTo($role)) {
+            throw new \DomainException('Role is already same.');
+        }
+
+        $this->role = $role;
+    }
+
+    public function remove(): void
+    {
+        if (!$this->isWait()) {
+            throw new \DomainException('Unable to remove active user.');
+        }
     }
 }
