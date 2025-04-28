@@ -43,6 +43,13 @@ services:
             - ./api:/app
         environment:
             APP_DEBUG: 1
+            APP_ENV: dev
+            PHP_IDE_CONFIG: serverName=API
+            DB_HOST: api-postgres
+            DB_PORT: 54321
+            DB_NAME: app
+            DB_USER: app
+            DB_PASSWORD: ${API_DB_PASSWORD}
 
     api-php-cli:
         build: 
@@ -54,22 +61,27 @@ services:
             - ./api:/app
         environment:
             APP_DEBUG: 1
+            APP_ENV: dev
+            DB_HOST: api-postgres
+            DB_PORT: 54321
+            DB_NAME: app
+            DB_USER: app
+            DB_PASSWORD: ${API_DB_PASSWORD}
 
-    api-mysql:
-        image: mysql:8.0
+    api-postgres:
+        image: postgres:17.4-alpine3.21
         restart: always
         environment:
-            MYSQL_DATABASE: app
-            MYSQL_USER: app
-            MYSQL_PASSWORD: secrets
-            MYSQL_ROOT_PASSWORD: rootpassword
+            POSTGRES_DB: app
+            POSTGRES_USER: app
+            POSTGRES_PASSWORD: secrets
         volumes:
-            - api-mysql:/var/lib/mysql
+            - api-postgres:/var/lib/postgresql/data
         ports:
-            - "33061:3306"
+            - "54321:5432"
 
 volumes:
-    api-mysql:
+    api-postgres:
 
 networks:
     traefik-public:

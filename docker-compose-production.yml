@@ -25,9 +25,26 @@ services:
         restart: always
         environment:
             APP_DEBUG: 0
+            DB_URL: postgres://app:${API_DB_PASSWORD}@api-postgres:54321/app
 
     api-php-cli:
         image: ${REGISTRY}/auction-api-php-cli:${IMAGE_TAG}
         restart: always
         environment:
             APP_DEBUG: 0
+            DB_URL: postgres://app:${API_DB_PASSWORD}@api-postgres:54321/app
+
+    api-postgres:
+        image: postgres:17.4-alpine3.21
+        restart: always
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+            - auction-postgres-data:/var/lib/postgresql/data
+        networks:
+            - auction-network
+
+volumes:
+    auction-postgres-data:
