@@ -9,6 +9,7 @@ return [
         'console' => [
             'commands' => [
                 HelloCommand::class,
+                //\Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand::class,
             ]
         ]
     ],

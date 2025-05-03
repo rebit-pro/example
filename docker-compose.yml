@@ -38,27 +38,33 @@ services:
             context: api/docker
             dockerfile: development/php-fpm/DockerFile
         extra_hosts:
-            - "host.docker.internal:host-gateway"
+            - "host.docker.internal:192.168.0.11"
         volumes:
-            - ./api:/app
+            - ./api:/app:cached
         environment:
             APP_DEBUG: 1
             APP_ENV: dev
-            PHP_IDE_CONFIG: serverName=API
             DB_HOST: api-postgres
             DB_PORT: 54321
             DB_NAME: app
             DB_USER: app
             DB_PASSWORD: ${API_DB_PASSWORD}
+            XDEBUG_MODE: debug
+            XDEBUG_CLIENT_HOST: host.docker.internal
+            XDEBUG_CLIENT_PORT: 9003
+            PHP_IDE_CONFIG: "serverName=app-server"
 
     api-php-cli:
         build: 
             context: api/docker
             dockerfile: development/php-cli/DockerFile
         extra_hosts:
-            - "host.docker.internal:host-gateway"
+            - "host.docker.internal:192.168.0.11"
         volumes:
-            - ./api:/app
+            - /home/rebit-pro/auction/api:/app:cached
+        ports:
+            - "9003:9003"
+        working_dir: /app  # Ключевая строка!
         environment:
             APP_DEBUG: 1
             APP_ENV: dev
@@ -67,6 +73,10 @@ services:
             DB_NAME: app
             DB_USER: app
             DB_PASSWORD: ${API_DB_PASSWORD}
+            XDEBUG_MODE: debug
+            XDEBUG_CLIENT_HOST: host.docker.internal
+            XDEBUG_CLIENT_PORT: 9003
+            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
 
     api-postgres:
         image: postgres:17.4-alpine3.21
