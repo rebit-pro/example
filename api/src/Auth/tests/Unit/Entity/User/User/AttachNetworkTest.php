@@ -6,7 +6,7 @@ namespace App\Auth\tests\Unit\Entity\User\User;
 
 use App\Auth\Entity\User\Email;
 use App\Auth\Entity\User\Id;
-use App\Auth\Entity\User\NetworkIdentity;
+use App\Auth\Entity\User\Network;
 use App\Auth\Entity\User\Token;
 use App\Auth\Entity\User\User;
 use App\Auth\tests\Builder\UserBuilder;
@@ -28,7 +28,7 @@ class AttachNetworkTest extends TestCase
             ->active()
             ->build();
 
-        $network = new NetworkIdentity('vk', 'vk-1');
+        $network = new Network('vk', 'vk-1');
         $user->attachNetwork($network);
 
         self::assertCount(1, $networks = $user->getNetworks());
@@ -44,7 +44,7 @@ class AttachNetworkTest extends TestCase
             ->active()
             ->build();
 
-        $network = new NetworkIdentity('vk', 'vk-1');
+        $network = new Network('vk', 'vk-1');
 
         $user->attachNetwork($network);
 

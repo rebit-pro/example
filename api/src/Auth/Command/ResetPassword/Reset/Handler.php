@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\ResetPassword\Reset;
 
-use App\Auth\Entity\User\Flusher;
-use App\Auth\Entity\User\UserRepository;
+use App\Auth\Entity\User\FlusherInterface;
+use App\Auth\Entity\User\UserRepositoryInterface;
 use App\Auth\Service\PasswordHasher;
 use DateTimeImmutable;
 
@@ -14,13 +14,13 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepository $users
-     * @param Flusher $flasher
+     * @param UserRepositoryInterface $users
+     * @param FlusherInterface $flasher
      */
     public function __construct(
-        private UserRepository $users,
-        private Flusher $flasher,
-        private PasswordHasher $hasher,
+        private UserRepositoryInterface $users,
+        private FlusherInterface        $flasher,
+        private PasswordHasher          $hasher,
     ) {
     }
 

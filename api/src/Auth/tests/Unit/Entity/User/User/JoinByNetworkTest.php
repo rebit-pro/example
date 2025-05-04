@@ -6,7 +6,7 @@ namespace App\Auth\tests\Unit\Entity\User\User;
 
 use App\Auth\Entity\User\Email;
 use App\Auth\Entity\User\Id;
-use App\Auth\Entity\User\NetworkIdentity;
+use App\Auth\Entity\User\Network;
 use App\Auth\Entity\User\Role;
 use App\Auth\Entity\User\User;
 use DateTimeImmutable;
@@ -23,7 +23,7 @@ class JoinByNetworkTest extends TestCase
             $id = Id::generate(),
             $date = new DateTimeImmutable(),
             $email = new Email('mail@example.com'),
-            $network = new NetworkIdentity('google', 'google-1'),
+            $network = new Network('google', 'google-1'),
         );
 
         self::assertEquals($id, $user->getId());
