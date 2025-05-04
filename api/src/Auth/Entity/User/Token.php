@@ -9,22 +9,14 @@ use Webmozart\Assert\Assert;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 final class Token
 {
     public function __construct(
-        /**
-         * @var string
-         * @ORM\Column(type="string", name="token", nullable=true)
-         */
-        private $value,
-        /**
-         * @var DateTimeImmutable
-         * @ORM\Column(type="datetime_immutable", nullable=true)
-         */
-        private $expires,
+        #[ORM\Column(name: 'token', type: 'string', nullable: true)]
+        private string $value,
+        #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+        private DateTimeImmutable $expires,
     ) {
         Assert::uuid($this->value);
         $this->value = mb_strtolower($this->value);
@@ -55,7 +47,7 @@ final class Token
         return $this->value === $value;
     }
 
-    public function isExpiredTo(\DateTimeImmutable $date): bool
+    public function isExpiredTo(DateTimeImmutable $date): bool
     {
         return $date >= $this->expires;
     }

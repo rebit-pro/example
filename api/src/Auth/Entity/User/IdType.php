@@ -11,7 +11,7 @@ final class IdType extends GuidType
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
-        return $value instanceof Id ? $value->getValue() : $value;
+        return $value instanceof Id ? (string) $value->getValue() : $value;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Id
