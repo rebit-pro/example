@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\ResetPassword\Request;
 
-use App\Auth\Entity\User\{Email, Flusher, Id, User, UserRepository};
+use App\Auth\Entity\User\{Email, FlusherInterface, Id, User, UserRepositoryInterface};
 use App\Auth\Service\{JoinConfirmationSender, PasswordHasher, PasswordResetTokenSender, Tokenizer};
 use DateTimeImmutable;
 
@@ -13,16 +13,16 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepository $users
+     * @param UserRepositoryInterface $users
      * @param Tokenizer $tokenizer
      * @param PasswordResetTokenSender $sender
-     * @param Flusher $flasher
+     * @param FlusherInterface $flasher
      */
     public function __construct(
-        private UserRepository $users,
-        private Tokenizer $tokenizer,
+        private UserRepositoryInterface  $users,
+        private Tokenizer                $tokenizer,
         private PasswordResetTokenSender $sender,
-        private Flusher $flasher
+        private FlusherInterface $flasher
     ) {
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\ChangePassword;
 
-use App\Auth\Entity\User\{Flusher, Id, UserRepository};
+use App\Auth\Entity\User\{FlusherInterface, Id, UserRepositoryInterface};
 use App\Auth\Service\{PasswordHasher};
 use DateTimeImmutable;
 
@@ -13,14 +13,14 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepository $users
+     * @param UserRepositoryInterface $users
      * @param PasswordHasher $hash
-     * @param Flusher $flasher
+     * @param FlusherInterface $flasher
      */
     public function __construct(
-        private UserRepository $users,
-        private PasswordHasher $hash,
-        private Flusher $flasher
+        private UserRepositoryInterface $users,
+        private PasswordHasher          $hash,
+        private FlusherInterface $flasher
     ) {
     }
 

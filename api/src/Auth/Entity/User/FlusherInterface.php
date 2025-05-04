@@ -2,7 +2,7 @@
 
 namespace App\Auth\Entity\User;
 
-interface Flusher
+interface FlusherInterface
 {
     public function flush(): void;
 

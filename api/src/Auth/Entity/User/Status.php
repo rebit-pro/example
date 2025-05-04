@@ -12,9 +12,15 @@ final class Status
     private const string WAIT = 'wait';
     private const string ACTIVE = 'active';
 
-    private function __construct(
-        private readonly string $name
-    ) {
+    private readonly string $name;
+
+    public function __construct($name)
+    {
+        Assert::oneOf($name, [
+            self::WAIT,
+            self::ACTIVE,
+        ]);
+        $this->name = $name;
     }
 
     public static function wait(): self
@@ -35,5 +41,15 @@ final class Status
     public function isActive(): bool
     {
         return $this->name === self::ACTIVE;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }

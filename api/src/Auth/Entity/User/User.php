@@ -6,24 +6,68 @@ namespace App\Auth\Entity\User;
 
 use AllowDynamicProperties;
 use App\Auth\Service\PasswordHasher;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-#[AllowDynamicProperties] final class User
+/**
+ *
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="auth_users")
+ *
+ * */
+final class User
 {
+    /**
+     * @ORM\Column(type="string",  nullable=true)
+     */
     private ?string $passwordHash = null;
+    /**
+     * @ORM\Embedded(class='Token')
+     */
     private ?Token $joinConfirmToken = null;
+    /**
+     * @ORM\Embedded(class='Token')
+     */
     private ?Token $passwordResetToken = null;
+    /**
+     * @ORM\Column["type"="auth_user_email", nullable=true]
+     */
     private ?Email $newEmail = null;
+    /**
+     * @ORM\Embedded(class='Token')
+     */
     private ?Token $newEmailToken = null;
-    private \ArrayObject $networks;
+    /**
+     * @ORM\OneToMany(targetEntity="UserNetwork", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     */
+    private Collection $networks;
+    /**
+     * @ORM\Column["type"="auth_user_role", length=16]
+     */
     private Role $role;
 
     private function __construct(
+        /**
+         * @ORM\Column["type"="auth_user_id"]
+         * @ORM\Id
+         */
         private readonly Id $id,
+        /**
+         * @ORM\Column["type"="datetime_immutable"]
+         */
         private \DateTimeImmutable $date,
+        /**
+         * @ORM\Column["type"="auth_user_email", unique=true]
+         */
         private Email $email,
+        /**
+         * @ORM\Column["type"="auth_user_status", length=16]
+         */
         private Status $status
     ) {
-        $this->networks = new \ArrayObject();
+        $this->networks = new ArrayCollection();
         $this->role = Role::user();
     }
 
@@ -44,23 +88,23 @@ use App\Auth\Service\PasswordHasher;
         Id $id,
         \DateTimeImmutable $date,
         Email $email,
-        NetworkIdentity $identity
+        Network $network,
     ): self {
         $user = new self($id, $date, $email, Status::active());
-        $user->networks->append($identity);
+        $user->networks->add(new UserNetwork($user, $network));
         return $user;
     }
 
-    public function attachNetwork(NetworkIdentity $identity): void
+    public function attachNetwork(Network $network): void
     {
-        /** @var NetworkIdentity $network */
-        foreach ($this->networks as $network) {
-            if ($network->isEqualTo($identity)) {
+        /** @var UserNetwork $existing */
+        foreach ($this->networks as $existing) {
+            if ($existing->getNetwork()->isEqualTo($network)) {
                 throw new \DomainException('User with this network already exists.');
             }
         }
 
-        $this->networks->append($identity);
+        $this->networks->add(new UserNetwork($this, $network));
     }
 
     public function isWait(): bool
@@ -100,7 +144,10 @@ use App\Auth\Service\PasswordHasher;
 
     public function getNetworks(): array
     {
-        return $this->networks->getArrayCopy();
+        /** @var Network[] */
+        return $this->networks->map(static function (UserNetwork $network) {
+            return $network->getNetwork();
+        })->toArray();
     }
 
     public function getPasswordResetToken(): ?Token
@@ -236,6 +283,22 @@ use App\Auth\Service\PasswordHasher;
     {
         if (!$this->isWait()) {
             throw new \DomainException('Unable to remove active user.');
+        }
+    }
+
+    /**
+     * @ORM\PostLoad
+     */
+    public function checkEmbeds(): void
+    {
+        if ($this->joinConfirmToken && $this->joinConfirmToken->isEmpty()) {
+            $this->joinConfirmToken = null;
+        }
+        if ($this->passwordResetToken && $this->passwordResetToken->isEmpty()) {
+            $this->passwordResetToken = null;
+        }
+        if ($this->newEmailToken && $this->newEmailToken->isEmpty()) {
+            $this->newEmailToken = null;
         }
     }
 }

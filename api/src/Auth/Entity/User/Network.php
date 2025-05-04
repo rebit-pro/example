@@ -5,17 +5,27 @@ declare(strict_types=1);
 namespace App\Auth\Entity\User;
 
 use Webmozart\Assert\Assert;
+use Doctrine\ORM\Mapping as ORM;
 
-class NetworkIdentity
+/**
+ * @ORM\Embeddable
+ */
+class Network
 {
     public function __construct(
-        private string $network,
+        /**
+         * @ORM\Column(type="string")
+         */
+        private string $name,
+        /**
+         * @ORM\Column(type="string")
+         */
         private string $identity,
     ) {
-        Assert::notEmpty($this->network);
+        Assert::notEmpty($this->name);
         Assert::notEmpty($this->identity);
 
-        $this->network = mb_strtolower($this->network);
+        $this->name = mb_strtolower($this->name);
         $this->identity = mb_strtolower($this->identity);
     }
 
@@ -28,7 +38,7 @@ class NetworkIdentity
 
     public function getNetwork(): string
     {
-        return $this->network;
+        return $this->name;
     }
 
     public function getIdentity(): string

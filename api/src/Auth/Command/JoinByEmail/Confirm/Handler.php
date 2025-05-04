@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\JoinByEmail\Confirm;
 
-use App\Auth\Entity\User\Flusher;
+use App\Auth\Entity\User\FlusherInterface;
 use App\Auth\Entity\User\UserRepository;
+use App\Auth\Entity\User\UserRepositoryInterface;
 use DateTimeImmutable;
 
 final readonly class Handler
@@ -13,12 +14,12 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepository $users
-     * @param Flusher $flasher
+     * @param UserRepositoryInterface $users
+     * @param FlusherInterface $flasher
      */
     public function __construct(
-        private UserRepository $users,
-        private Flusher $flasher
+        private UserRepositoryInterface $users,
+        private FlusherInterface $flasher
     ) {
     }
 

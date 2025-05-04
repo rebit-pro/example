@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\Remove;
 
-use App\Auth\Entity\User\{Flusher, Id, UserRepository};
+use App\Auth\Entity\User\{FlusherInterface, Id, UserRepositoryInterface};
 
 final readonly class Handler
 {
     /**
      * Handle the command.
      *
-     * @param UserRepository $users
-     * @param Flusher $flasher
+     * @param UserRepositoryInterface $users
+     * @param FlusherInterface $flasher
      */
     public function __construct(
-        private UserRepository $users,
-        private Flusher $flasher
+        private UserRepositoryInterface $users,
+        private FlusherInterface $flasher
     ) {
     }
 

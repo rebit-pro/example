@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Auth\Command\JoinByNetwork;
 
-use App\Auth\Entity\User\{Email, Flusher, Id, NetworkIdentity, User, UserRepository};
+use App\Auth\Entity\User\{Email, FlusherInterface, Id, Network, User, UserRepositoryInterface};
 use DateTimeImmutable;
 
 final readonly class Handler
@@ -12,12 +12,12 @@ final readonly class Handler
     /**
      * Handle the command.
      *
-     * @param UserRepository $users
-     * @param Flusher $flasher
+     * @param UserRepositoryInterface $users
+     * @param FlusherInterface $flasher
      */
     public function __construct(
-        private UserRepository $users,
-        private Flusher $flasher
+        private UserRepositoryInterface $users,
+        private FlusherInterface $flasher
     ) {
     }
 
@@ -28,7 +28,7 @@ final readonly class Handler
      */
     public function handle(Command $command): void
     {
-        $identity = new NetworkIdentity($command->network, $command->identity);
+        $identity = new Network($command->network, $command->identity);
         $email = new Email($command->email);
 
         if ($this->users->hasByNetwork($identity)) {

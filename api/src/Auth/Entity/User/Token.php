@@ -4,14 +4,27 @@ declare(strict_types=1);
 
 namespace App\Auth\Entity\User;
 
+use DomainException;
 use Webmozart\Assert\Assert;
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Embeddable
+ */
 final class Token
 {
     public function __construct(
-        private string $value,
-        private readonly DateTimeImmutable $expires,
+        /**
+         * @var string
+         * @ORM\Column(type="string", name="token", nullable=true)
+         */
+        private $value,
+        /**
+         * @var DateTimeImmutable
+         * @ORM\Column(type="datetime_immutable", nullable=true)
+         */
+        private $expires,
     ) {
         Assert::uuid($this->value);
         $this->value = mb_strtolower($this->value);
@@ -30,10 +43,10 @@ final class Token
     public function validate(string $token, DateTimeImmutable $date): void
     {
         if (!$this->isEqualTo($token)) {
-            throw new \DomainException('Token is invalid.');
+            throw new DomainException('Token is invalid.');
         }
         if ($this->isExpiredTo($date)) {
-            throw new \DomainException('Confirmation token is expired.');
+            throw new DomainException('Confirmation token is expired.');
         }
     }
 
@@ -45,5 +58,10 @@ final class Token
     public function isExpiredTo(\DateTimeImmutable $date): bool
     {
         return $date >= $this->expires;
+    }
+
+    public function isEmpty(): bool
+    {
+        return empty($this->value);
     }
 }
