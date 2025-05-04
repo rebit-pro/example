@@ -4,67 +4,46 @@ declare(strict_types=1);
 
 namespace App\Auth\Entity\User;
 
-use AllowDynamicProperties;
 use App\Auth\Service\PasswordHasher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- *
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
- * @ORM\Table(name="auth_users")
- *
- * */
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'auth_users')]
 final class User
 {
-    /**
-     * @ORM\Column(type="string",  nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $passwordHash = null;
-    /**
-     * @ORM\Embedded(class='Token')
-     */
+
+    #[ORM\Embedded(class: Token::class)]
     private ?Token $joinConfirmToken = null;
-    /**
-     * @ORM\Embedded(class='Token')
-     */
+
+    #[ORM\Embedded(class: Token::class)]
     private ?Token $passwordResetToken = null;
-    /**
-     * @ORM\Column["type"="auth_user_email", nullable=true]
-     */
+
+    #[ORM\Column(type: 'auth_user_email', nullable: true)]
     private ?Email $newEmail = null;
-    /**
-     * @ORM\Embedded(class='Token')
-     */
+
+    #[ORM\Embedded(class: Token::class)]
     private ?Token $newEmailToken = null;
-    /**
-     * @ORM\OneToMany(targetEntity="UserNetwork", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+
+    #[ORM\OneToMany(targetEntity: UserNetwork::class, mappedBy: 'user', cascade: ['all'], orphanRemoval: true)]
     private Collection $networks;
-    /**
-     * @ORM\Column["type"="auth_user_role", length=16]
-     */
+
+    #[ORM\Column(type: 'auth_user_role', length: 16)]
     private Role $role;
 
     private function __construct(
-        /**
-         * @ORM\Column["type"="auth_user_id"]
-         * @ORM\Id
-         */
+        #[ORM\Id]
+        #[ORM\Column(type: 'auth_user_id')]
         private readonly Id $id,
-        /**
-         * @ORM\Column["type"="datetime_immutable"]
-         */
+        #[ORM\Column(type: 'datetime_immutable')]
         private \DateTimeImmutable $date,
-        /**
-         * @ORM\Column["type"="auth_user_email", unique=true]
-         */
+        #[ORM\Column(type: 'auth_user_email', unique: true)]
         private Email $email,
-        /**
-         * @ORM\Column["type"="auth_user_status", length=16]
-         */
+        #[ORM\Column(type: 'auth_user_status', length: 16)]
         private Status $status
     ) {
         $this->networks = new ArrayCollection();
@@ -97,7 +76,6 @@ final class User
 
     public function attachNetwork(Network $network): void
     {
-        /** @var UserNetwork $existing */
         foreach ($this->networks as $existing) {
             if ($existing->getNetwork()->isEqualTo($network)) {
                 throw new \DomainException('User with this network already exists.');
@@ -144,10 +122,7 @@ final class User
 
     public function getNetworks(): array
     {
-        /** @var Network[] */
-        return $this->networks->map(static function (UserNetwork $network) {
-            return $network->getNetwork();
-        })->toArray();
+        return $this->networks->map(static fn(UserNetwork $network) => $network->getNetwork())->toArray();
     }
 
     public function getPasswordResetToken(): ?Token
@@ -172,7 +147,7 @@ final class User
 
     public function confirmJoin(string $token, \DateTimeImmutable $date): void
     {
-        if ($this->isActive() === true) {
+        if ($this->isActive()) {
             throw new \DomainException('User is already active.');
         }
 
@@ -201,7 +176,7 @@ final class User
 
     public function requestPasswordReset(Token $token, \DateTimeImmutable $date): void
     {
-        if ($this->isActive() === false) {
+        if (!$this->isActive()) {
             throw new \DomainException('User is not active.');
         }
 
@@ -216,7 +191,7 @@ final class User
 
     public function resetPassword(string $token, string $hash, \DateTimeImmutable $date): void
     {
-        if ($this->isActive() === false) {
+        if (!$this->isActive()) {
             throw new \DomainException('User is not active.');
         }
 
@@ -232,7 +207,7 @@ final class User
 
     public function changePassword(string $current, string $new, PasswordHasher $hasher): void
     {
-        if ($this->isActive() === false) {
+        if (!$this->isActive()) {
             throw new \DomainException('User is not active.');
         }
 
@@ -252,7 +227,7 @@ final class User
         \DateTimeImmutable $date,
         Email $email,
     ): void {
-        if ($this->isActive() === false) {
+        if (!$this->isActive()) {
             throw new \DomainException('User is not active.');
         }
 
@@ -286,9 +261,7 @@ final class User
         }
     }
 
-    /**
-     * @ORM\PostLoad
-     */
+    #[ORM\PostLoad]
     public function checkEmbeds(): void
     {
         if ($this->joinConfirmToken && $this->joinConfirmToken->isEmpty()) {

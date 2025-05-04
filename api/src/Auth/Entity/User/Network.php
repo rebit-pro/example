@@ -7,19 +7,13 @@ namespace App\Auth\Entity\User;
 use Webmozart\Assert\Assert;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable
- */
+#[ORM\Embeddable]
 class Network
 {
     public function __construct(
-        /**
-         * @ORM\Column(type="string")
-         */
+        #[ORM\Column(type: 'string')]
         private string $name,
-        /**
-         * @ORM\Column(type="string")
-         */
+        #[ORM\Column(type: 'string')]
         private string $identity,
     ) {
         Assert::notEmpty($this->name);

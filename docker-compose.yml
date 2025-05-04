@@ -45,7 +45,7 @@ services:
             APP_DEBUG: 1
             APP_ENV: dev
             DB_HOST: api-postgres
-            DB_PORT: 54321
+            DB_PORT: 5432
             DB_NAME: app
             DB_USER: app
             DB_PASSWORD: ${API_DB_PASSWORD}
@@ -69,7 +69,7 @@ services:
             APP_DEBUG: 1
             APP_ENV: dev
             DB_HOST: api-postgres
-            DB_PORT: 54321
+            DB_PORT: 5432
             DB_NAME: app
             DB_USER: app
             DB_PASSWORD: ${API_DB_PASSWORD}

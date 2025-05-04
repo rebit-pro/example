@@ -4,40 +4,26 @@ declare(strict_types=1);
 
 namespace App\Auth\Entity\User;
 
-use AllowDynamicProperties;
-use App\Auth\Service\PasswordHasher;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 
-/**
- *
- * @ORM\Entity(readOnly=true)
- * @ORM\HasLifecycleCallbacks
- * @ORM\Table(name="auth_user_networks", uniqueConstraints={
- *     @ORM\UniqueConstraint(columns={"network_name", "newtork_identity"})
- * })
- * */
+#[ORM\Entity(readOnly: true)]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'auth_user_networks')]
+#[ORM\UniqueConstraint(columns: ['network_name', 'network_identity'])]
 final class UserNetwork
 {
-   /**
-    * @ORM\Column(type="guid")
-    * */
-   private string $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'guid')]
+    // Если хотите явно показать, что сами генерируете:
+    #[ORM\GeneratedValue(strategy: 'NONE')]
+    private string $id;
 
     public function __construct(
-        /**
-         * @var User
-         * @ORM\ManyToOne(targetEntity="User", inversedBy="networks")
-         * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
-         *
-         * */
+        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'networks')]
+        #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
         private User $user,
-        /**
-         * @var Network
-         * @ORM\Embedded(class="Network")
-         * */
+        #[ORM\Embedded(class: Network::class)]
         private readonly Network $network
     ) {
         $this->id = Uuid::uuid4()->toString();
