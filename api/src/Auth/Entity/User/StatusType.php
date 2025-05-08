@@ -3,9 +3,9 @@
 namespace App\Auth\Entity\User;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\GuidType;
+use Doctrine\DBAL\Types\StringType;
 
-final class StatusType extends GuidType
+final class StatusType extends StringType
 {
     public const string NAME = 'auth_user_status';
 

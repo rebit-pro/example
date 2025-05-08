@@ -3,9 +3,9 @@
 namespace App\Auth\Entity\User;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\GuidType;
+use Doctrine\DBAL\Types\StringType;
 
-final class RoleType extends GuidType
+final class RoleType extends StringType
 {
     public const string NAME = 'auth_user_role';
 
